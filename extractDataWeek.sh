@@ -16,7 +16,7 @@ fi
 # 2. The RIB file path
 # 2. The output file path
 function filter_rib_entries() {
-  bgpscanner -p "$1$" "$2" >>"$3"
+  eval '$(bgpscanner -p "$1$" $2 > $3)'
 }
 
 ASNS=(
@@ -29,9 +29,12 @@ ASNS=(
 # For each compressed file in the data folder...
 # Filter the RIB entries for every ASN in the ASNS array
 for asn in "${ASNS[@]}"; do
-  echo "Filtering from SP2.rib.20221122.${1}00.bz2 for $asn"
+  filebasename=$(basename "${1}")
 
-  filter_rib_entries "$asn" "./SP2_rib_22-11-22/SP2.rib.20221122.${1}00.bz2" "./data/AS$asn/AS$asn.${1}00.output.txt"
+  echo "Filtering from $filebasename for $asn"
+
+  filter_rib_entries "$asn" "./week/SP2_rib_22-11-${1}/SP2.rib.202211${1}.${2}00.bz2" "./data/week/AS$asn/SP_RIB_22-11-${1}/AS$asn.SP2.rib.202211${1}.${2}00.output.txt"
 done
 
-# ${1} = Hours
+# ${1} = Days
+# ${2} = Hours
